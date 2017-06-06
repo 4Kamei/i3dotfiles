@@ -1,0 +1,2 @@
+#!/bin/sh
+cat ~/.config/i3/rofi_dmenu/prog | rofi -dmenu | ${SHELL:-"/bin/sh"} &

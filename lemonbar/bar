@@ -1,0 +1,1 @@
+sh $HOME/.config/i3/lemonbar/feeder | lemonbar -p -b -g 1920x30+1920+0

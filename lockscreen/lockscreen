@@ -1,0 +1,18 @@
+#!/bin/sh
+IMAGE=lock.png
+cd ~/.config/i3/lockscreen
+if [ "$1" = "-b" ]; then
+    IMAGE=first_login.png
+else
+    scrot -zm $IMAGE
+    convert -blur 5x5 $IMAGE $IMAGE
+    composite -gravity east overlay.png $IMAGE $IMAGE
+fi
+i3lock -i $IMAGE \
+	--insidecolor=00000000 \
+	--textcolor=00000000 \
+	--timecolor=ffffff00 \
+	--keyhlcolor=fabb5cff \
+	--screen 0 \
+	--ringcolor=00000000 \
+	--ringvercolor=00000000
