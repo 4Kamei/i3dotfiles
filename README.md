@@ -1,4 +1,4 @@
-Welcome to my ./config/i3 folder
+Welcome to my .config/i3 folder
 
 Depends
 
