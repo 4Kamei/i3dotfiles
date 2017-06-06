@@ -1,1 +1,1 @@
-My I3 config 
+Welcome to my ./config/i3 folder
