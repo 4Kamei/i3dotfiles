@@ -6,6 +6,7 @@ if [ "$1" = "-b" ]; then
 else
     scrot -zm $IMAGE
     convert -blur 5x5 $IMAGE $IMAGE
+    #Gravity east since I want overlay on right image (my laptop montior) 
     composite -gravity east overlay.png $IMAGE $IMAGE
 fi
 i3lock -i $IMAGE \
@@ -16,3 +17,6 @@ i3lock -i $IMAGE \
 	--screen 0 \
 	--ringcolor=00000000 \
 	--ringvercolor=00000000
+if [ "$IMAGE" = "lock.png" ]; then
+	rm $IMAGE
+fi

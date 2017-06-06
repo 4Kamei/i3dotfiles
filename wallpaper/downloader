@@ -1,0 +1,20 @@
+#!/bin/sh
+
+#Usage ./downloader <dir> <file> 
+
+#if dir doesn't exist
+if [ ! -f "$2" ]; then
+	echo "No file specified"
+	exit;
+fi
+#print each line | save first field in name, save second in link
+cat $2 | while read name link
+do
+	if [ "$name" = "" ]; then
+		exit;
+	fi
+	if [ ! "$name" = "#" ]; then
+		echo "downloading $name from $link"	
+		wget --user-agent="Mozilla/5.0 (X11; Linux x86_64; rv:53.0) Gecko/20100101 Firefox/53.0" -O $1/$name $link
+	fi
+done

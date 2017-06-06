@@ -6,6 +6,6 @@ ls active |  grep -Ev "$(cat current)" | grep -E "*\.[jpg|png]" > temp
 #select one random line and overwrite current
 shuf -n 1 temp > current
 #set as desktop background 
-feh --bg-center $(cat current)
+feh --bg-center "active/$(cat current)"
 #remove temp file 
 rm temp
