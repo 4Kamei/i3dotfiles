@@ -1,7 +1,6 @@
 #!/bin/bash
 #run this from xinitrc?
 cd $HOME/.config/i3/wallpaper
-
 while true; do
 	bash switch_background
 	sleep 10m	
