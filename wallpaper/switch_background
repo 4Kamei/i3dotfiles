@@ -1,0 +1,15 @@
+#!/bin/sh
+#cd to this dir 
+cd $HOME/.config/i3/wallpaper/
+if [ ! -f "current" ]; then
+	ls active > temp 
+	shuf -n 1 temp > current 
+fi
+#ls |  remove current | remove all non-image files | save in temp file
+ls active |  grep -Ev "$(cat current)" | grep -E "*\.[jpg|png]" > temp
+#select one random line and overwrite current
+shuf -n 1 temp > current
+#set as desktop background 
+feh --bg-center "active/$(cat current)"
+#remove temp file 
+rm temp
