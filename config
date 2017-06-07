@@ -9,7 +9,8 @@
 #
 # Please see http://i3wm.org/docs/userguide.html for a complete reference!
 
-exec "echo $DISPLAY > $HOME/.xenv"
+exec --no-startup-id "echo $DISPLAY > $HOME/.xenv"
+exec --no-startup-id "sh ~/.config/i3/wallpaper/switch_background"
 exec --no-startup-id "sh ~/.config/i3/lockscreen/lockscreen -b"
 set $mod Mod1
 
