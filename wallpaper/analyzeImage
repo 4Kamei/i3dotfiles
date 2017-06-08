@@ -1,0 +1,32 @@
+#!/bin/bash
+analyse() {
+	echo "Analysing image $1"
+	convert $1 -depth 3 temp.png
+	NUM=0
+	convert "temp.png" -format %c -depth 8 histogram:info:- | sort -t: -nk 1 | tail -4 | grep -oE "#[0-9A-F]{6}" | while read line; do
+		echo "$line$NUM"
+		convert colours.png -fill $line -draw "point $2,$NUM" colours.png
+		NUM=$(($NUM+1))
+	done
+}
+
+
+cd "$I3_HOME/wallpaper"
+if [ ! "$1" = "" ]; then
+	IMAGE=$1
+else
+	echo "usage analyseImage <file/dir>" 
+	exit;
+fi
+convert -size "$(ls -a $IMAGE | wc -l)x4" xc:black -stroke none colours.png
+if [ -d "$1" ]; then 
+	X=0
+	ls $1 | while read line; do
+		analyse "$1/$line" $X
+		X=$(($X+1))
+	done
+fi
+if [ -f "$1" ]; then
+	analyse $IMAGE 0
+fi
+convert colours.png -filter point -resize 16000% colours.png
