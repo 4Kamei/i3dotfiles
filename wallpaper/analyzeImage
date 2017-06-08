@@ -1,13 +1,30 @@
 #!/bin/bash
+OUTPUT=false
+
+while getopts 'of:' arg; do
+	case "${arg}" in
+		o) OUTPUT=true ;;
+		f) FILE="${OPTARG}" ;;
+		*) error "Unexpected option $arg" ;;
+	esac	
+done
+
+echo $OUTPUT
+echo $FILE
+
+if [ "$FILE" = "" ]; then
+	echo "Error: No input file"
+fi
 COLOURS="6"
-MIN_INTENSITY="50"
+MIN_INTENSITY="30"
+
 getDec() {
 	echo $(echo "$((16#$1))")
 }
 analyse() {
 	echo "Analysing image $1"
 	NUM=0
-	convert "$1" -format %c -depth 3 histogram:info:- | sort -r -t: -nk 1 | grep -oE "#[0-9A-F]{6}" | while read line; do
+	convert "$1" -format %c -depth 4 histogram:info:- | sort -r -t: -nk 1 | grep -oE "#[0-9A-F]{6}" | while read line; do
 		echo "$line"
 		R=$(getDec $(expr substr $line 2 2))
 		G=$(getDec $(expr substr $line 4 2))
@@ -25,23 +42,18 @@ analyse() {
 	done
 }
 
-
 cd "$I3_HOME/wallpaper"
-if [ ! "$1" = "" ]; then
-	IMAGE=$1
-else
-	echo "usage analyseImage <file/dir>" 
-	exit;
-fi
+
 convert -size "$(ls -1 $IMAGE | wc -l)x$COLOURS" xc:black -stroke none colours.png
-if [ -d "$1" ]; then 
+if [ -d "$FILE" ]; then 
 	X=0
-	ls $1 | while read line; do
-		analyse "$1/$line" $X
+	ls $FILE | while read line; do
+		analyse "$FILE/$line" $X
 		X=$(($X+1))
 	done
 fi
-if [ -f "$1" ]; then
-	analyse $IMAGE 0
+
+if [ -f "$FILE" ]; then
+	analyse $FILE 0
 fi
 convert colours.png -filter point -resize 16000% colours.png
