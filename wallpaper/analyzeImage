@@ -1,12 +1,27 @@
 #!/bin/bash
+COLOURS="6"
+MIN_INTENSITY="50"
+getDec() {
+	echo $(echo "$((16#$1))")
+}
 analyse() {
 	echo "Analysing image $1"
-	convert $1 -depth 3 temp.png
 	NUM=0
-	convert "temp.png" -format %c -depth 8 histogram:info:- | sort -t: -nk 1 | tail -4 | grep -oE "#[0-9A-F]{6}" | while read line; do
-		echo "$line$NUM"
+	convert "$1" -format %c -depth 3 histogram:info:- | sort -r -t: -nk 1 | grep -oE "#[0-9A-F]{6}" | while read line; do
+		echo "$line"
+		R=$(getDec $(expr substr $line 2 2))
+		G=$(getDec $(expr substr $line 4 2))
+		B=$(getDec $(expr substr $line 6 2))
+		INTENSITY=$((($R + $B + $G)/3))
+		if [ $INTENSITY -lt $MIN_INTENSITY ]; then
+			continue
+		fi
+		echo "$INTENSITY"		
 		convert colours.png -fill $line -draw "point $2,$NUM" colours.png
 		NUM=$(($NUM+1))
+		if [ "$NUM" = "$COLOURS" ]; then
+			break
+		fi
 	done
 }
 
@@ -18,7 +33,7 @@ else
 	echo "usage analyseImage <file/dir>" 
 	exit;
 fi
-convert -size "$(ls -a $IMAGE | wc -l)x4" xc:black -stroke none colours.png
+convert -size "$(ls -1 $IMAGE | wc -l)x$COLOURS" xc:black -stroke none colours.png
 if [ -d "$1" ]; then 
 	X=0
 	ls $1 | while read line; do

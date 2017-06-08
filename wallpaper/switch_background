@@ -4,6 +4,9 @@ source $HOME/.bash_profile
 DISPLAY=$(cat $HOME/.xenv) 
 echo $DISPLAY
 cd $HOME/.config/i3/wallpaper/
+if [ "$(cat current)" = "" ]; then
+	rm current
+fi
 if [ ! -f "current" ]; then
 	ls active > temp 
 	shuf -n 1 temp > current 
