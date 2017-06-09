@@ -1,6 +1,6 @@
 #!/bin/bash
-OUTPUT=false
 
+OUTPUT=false
 while getopts 'of:' arg; do
 	case "${arg}" in
 		o) OUTPUT=true ;;
@@ -8,7 +8,7 @@ while getopts 'of:' arg; do
 		*) error "Unexpected option $arg" ;;
 	esac	
 done
-
+FILE_NAME=$(echo "$FILE" | sed 's/\(\.[^/]*\|[^/]*\/\)//g') 
 echo $OUTPUT
 echo $FILE
 
@@ -34,7 +34,12 @@ analyse() {
 			continue
 		fi
 		echo "$INTENSITY"		
-		convert colours.png -fill $line -draw "point $2,$NUM" colours.png
+		
+		if [ $OUTPUT = true ]; then
+			convert colours.png -fill $line -draw "point $2,$NUM" colours.png
+		else
+			echo "Colour $NUM:$line" >> "$FILE_NAME-colours.txt"    
+		fi		
 		NUM=$(($NUM+1))
 		if [ "$NUM" = "$COLOURS" ]; then
 			break
