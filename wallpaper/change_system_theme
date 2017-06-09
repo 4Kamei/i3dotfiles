@@ -1,0 +1,3 @@
+#!/bin/bash
+sh switch_background
+sh analyse -f "active/$(cat current | grep -oP 'name: \K.*')" -i 40 -c 6 -s >> current 
