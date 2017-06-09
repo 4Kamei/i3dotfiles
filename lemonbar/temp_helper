@@ -1,0 +1,4 @@
+#!/bin/bash
+i3-msg "restart"
+pkill -15 lemonbar
+ruby feeder.rb | sh bar

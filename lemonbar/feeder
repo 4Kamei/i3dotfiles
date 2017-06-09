@@ -1,15 +1,18 @@
 #!/bin/bash
 
+getCol() {
+	col=$(cat theme_info | grep -oP "colour$1: \K.*")
+	echo "$col"
+}	
+
 cd $I3_HOME
 
-echo $(cat theme_info)
-COL_MAIN_1=$(cat theme_info | grep -oP "colour1:\K.*")
-#COL_MAIN_2=
-#COL_SECOND=
-#COL_THIRD=
-#COL_SUPPORTING=
 
-echo $COL_MAIN_1
+COL_MAIN_1=$(getCol 0)
+COL_MAIN_2=$(getCol 1)
+COL_SECOND=$(getCol 2)
+COL_THIRD=$(getCol 3)
+COL_SUPPORTING=$(getCol 4)
 
 BATT_EMPTY=$(echo -e '\ue236')
 BATT_HALF=$(echo -e '\ue237')
@@ -18,7 +21,7 @@ BATT_CHARGE=$(echo -e '\ue23a')
 BATT_FULL_CHARGE=$(echo -e '\ue239')
 
 GetDate() {
- 	DATE=$(date "+%{F#669966}%Y/%m/%d | %{F#ff00ff}%_H:%M:%S")
+ 	DATE=$(date "+%{F$COL_MAIN_1}%Y/%m/%d %{F$COL_THIRD} | %{F$COL_MAIN_1}%_H:%M:%S")
 	echo -n "$DATE"
 }
 
