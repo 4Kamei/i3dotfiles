@@ -6,6 +6,9 @@ cd $HOME/.config/i3
 if [ ! -f "theme_info" ]; then 
 	echo "name: $(ls wallpaper/active | shuf -n 1 -)" > theme_info
 fi
+if [ "$(cat theme_info | grep -oP 'name: \K.*')" = "" ]; then
+	echo "name: SeemsLikeError.png" > theme_info
+fi
 #ls |  remove current | remove all non-image files | save in temp file
 wallpaper=$(ls wallpaper/active |  grep -Ev "$(cat theme_info | grep -oP 'name: \K.')" | grep -E "*\.[jpg|png]" | shuf -n 1 -)
 #select one random line and overwrite current
