@@ -9,10 +9,8 @@ name_map = {}
 $focused = ""
 $message = ""
 
-listener = Listen.to("..") do |mod, add, rem|
-  str = mod[0][-10..-1]
-  if str == "theme_info"
-  end
+listener = Listen.to("..", only:/theme_info$/) do |mod, add, rem|
+  puts "Should update colours"
 end
 listener.start
 
