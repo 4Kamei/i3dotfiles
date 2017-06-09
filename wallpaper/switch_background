@@ -2,7 +2,7 @@
 #cd to this dir 
 source $HOME/.bash_profile
 DISPLAY=$(cat $HOME/.xenv) 
-cd $I3_HOME
+cd $HOME/.config/i3
 if [ ! -f "theme_info" ]; then 
 	echo "name: $(ls wallpaper/active | shuf -n 1 -)" > theme_info
 fi

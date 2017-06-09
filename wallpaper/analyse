@@ -72,7 +72,7 @@ analyse() {
 	done
 }
 
-cd "$I3_HOME/wallpaper"
+cd "$HOME/.config/i3/wallpaper"
 
 if [ $OUTPUT = true ]; then convert -size "$(ls -1 $FILE | wc -l)x$COLOURS" xc:black -stroke none colours.png; fi
 

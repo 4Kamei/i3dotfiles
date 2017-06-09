@@ -1,4 +1,4 @@
 #!/bin/bash
-cd $I3_HOME
+cd $HOME/.config/i3
 sh wallpaper/switch_background
 sh wallpaper/analyse -f "active/$(cat theme_info | grep -oP 'name: \K.*')" -i 40 -c 6 -s >> theme_info
