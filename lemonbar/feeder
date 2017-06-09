@@ -1,5 +1,13 @@
 #!/bin/bash
 
+cd $I3_HOME
+
+#COL_MAIN_1
+#COL_MAIN_2
+#COL_SECOND
+#COL_THIRD
+#COL_SUPPORTING
+
 
 BATT_EMPTY=$(echo -e '\ue236')
 BATT_HALF=$(echo -e '\ue237')
