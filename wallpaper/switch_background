@@ -6,15 +6,15 @@ cd $HOME/.config/i3/wallpaper/
 if [ "$(cat current)" = "" ]; then
 	rm current
 fi
-if [ ! -f "current" ]; then
-	ls active > temp 
-	shuf -n 1 temp > current 
+if [ ! -f "current" ]; then 
+	echo "name: $(ls active | shuf -n 1 -)" > current 
 fi
 #ls |  remove current | remove all non-image files | save in temp file
-ls active |  grep -Ev "$(cat current)" | grep -E "*\.[jpg|png]" > temp
+#echo "$(cat current | grep -oP 'name: \K.*')"
+ls active |  grep -Ev "$(cat current | grep -oP 'name: \K.')" | grep -E "*\.[jpg|png]" > temp
 #select one random line and overwrite current
-shuf -n 1 temp > current
+wallpaper=$(ls active | shuf -n 1 -)
+echo "name: $wallpaper" > current
 #set as desktop background. First line needed for feh to recognise the X session 
-DISPLAY=$(cat $HOME/.xenv) feh --bg-scale "active/$(cat current)"
-#remove temp file 
-rm temp
+DISPLAY=$(cat $HOME/.xenv) feh --bg-scale "active/$wallpaper"
+
