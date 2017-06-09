@@ -3,7 +3,7 @@ require 'listen'
 
 def print (o = nil)
   $message = o if ! o.is_a? NilClass
-  $pipe.puts "%{B#33FFFFFF}%{l}#{$workspace_string}%{c}>>#{$message} %{r}#{Time.now}"
+  $pipe.puts "%{B#33FFFFFF}%{l}#{$focused} - #{$workspace_string}%{c}>>#{$message} %{r}#{Time.now}"
 end
 name_map = {}
 $focused = ""
