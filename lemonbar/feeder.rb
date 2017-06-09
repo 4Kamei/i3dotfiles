@@ -1,12 +1,12 @@
 require 'i3ipc'
 require 'listen'
 
-def message (m)
-  $message = m
-  $pipe.puts "%{l}>>#{$message} %{r}#{Time.now}"
+def print (o = nil)
+  $message = o if ! o.is_a? NilClass
+  $pipe.puts "%{B#33FFFFFF}%{l}#{$workspace_string}%{c}>>#{$message} %{r}#{Time.now}"
 end
 name_map = {}
-focused = ""
+$focused = ""
 $message = ""
 
 listener = Listen.to("..") do |mod, add, rem|
@@ -24,11 +24,16 @@ work.each { |e|
 }
 
 block = Proc.new do |reply|
+  puts reply.change
   if reply.change == "focus"
-    message reply.current.name
+    $focused = name_map[reply.current.num]
+  elsif reply.change == "rename"
+    name_map[reply.current.num] = reply.current.name[2..-1]
+    $focused = name_map[reply.current.num]
   else
     puts "Unknown change #{reply.change}"
   end
+  print
 end
 
 pid = i3.subscribe('workspace', block)
@@ -39,7 +44,7 @@ $pipe = IO.popen("sh bar", "r+")
 
 last = Time.now
 while true
-    $pipe.puts "%{l}>>#{$message} %{r}#{Time.now}"
+    print
     now = Time.now
     _next = [last + 1,now].max
     sleep (_next-now)
