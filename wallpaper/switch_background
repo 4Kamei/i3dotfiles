@@ -2,19 +2,15 @@
 #cd to this dir 
 source $HOME/.bash_profile
 DISPLAY=$(cat $HOME/.xenv) 
-cd $HOME/.config/i3/wallpaper/
-if [ "$(cat current)" = "" ]; then
-	rm current
-fi
-if [ ! -f "current" ]; then 
-	echo "name: $(ls active | shuf -n 1 -)" > current 
+cd $I3_HOME
+if [ ! -f "theme_info" ]; then 
+	echo "name: $(ls wallpaper/active | shuf -n 1 -)" > current 
 fi
 #ls |  remove current | remove all non-image files | save in temp file
 #echo "$(cat current | grep -oP 'name: \K.*')"
-ls active |  grep -Ev "$(cat current | grep -oP 'name: \K.')" | grep -E "*\.[jpg|png]" > temp
+wallpaper=$(ls wallpaper/active |  grep -Ev "$(cat theme_info | grep -oP 'name: \K.')" | grep -E "*\.[jpg|png]" | shuf -n 1 -)
 #select one random line and overwrite current
-wallpaper=$(ls active | shuf -n 1 -)
-echo "name: $wallpaper" > current
+echo "name: $wallpaper" > theme_info
 #set as desktop background. First line needed for feh to recognise the X session 
-DISPLAY=$(cat $HOME/.xenv) feh --bg-scale "active/$wallpaper"
+DISPLAY=$(cat $HOME/.xenv) feh --bg-scale "wallpaper/active/$wallpaper"
 
