@@ -1,13 +1,20 @@
 #!/bin/bash
 
 OUTPUT=false
-while getopts 'of:' arg; do
+COLOURS="4"
+MIN_INTENSITY="40"
+
+while getopts 'of:c:m:' arg; do
+	echo "$arg $OPTARG"
 	case "${arg}" in
 		o) OUTPUT=true ;;
 		f) FILE="${OPTARG}" ;;
+		c) COLOURS="${OPTARG}" ;;
+		m) MIN_INTENSITY="${OPTARG}" ;;
 		*) error "Unexpected option $arg" ;;
 	esac	
 done
+echo "$MIN_INTENSITY"
 FILE_NAME=$(echo "$FILE" | sed 's/\(\.[^/]*\|[^/]*\/\)//g') 
 echo $OUTPUT
 echo $FILE
@@ -15,8 +22,6 @@ echo $FILE
 if [ "$FILE" = "" ]; then
 	echo "Error: No input file"
 fi
-COLOURS="6"
-MIN_INTENSITY="30"
 
 getDec() {
 	echo $(echo "$((16#$1))")
@@ -49,7 +54,7 @@ analyse() {
 
 cd "$I3_HOME/wallpaper"
 
-convert -size "$(ls -1 $IMAGE | wc -l)x$COLOURS" xc:black -stroke none colours.png
+convert -size "$(ls -1 $FILE | wc -l)x$COLOURS" xc:black -stroke none colours.png
 if [ -d "$FILE" ]; then 
 	X=0
 	ls $FILE | while read line; do
