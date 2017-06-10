@@ -1,5 +1,6 @@
 #!/bin/bash
 cd $HOME/.config/i3
-sh wallpaper/switch_background
-echo $(cat theme_info | grep -oP 'name: \K.*')
-sh wallpaper/analyse -f "active/$(cat theme_info | grep -oP 'name: \K.*')" -i 40 -c 6 -s >> theme_info
+sh wallpaper/switch_background 
+sh wallpaper/analyse -f "active/$(cat theme_info.temp | grep -oP 'name: \K.*')" -i 40 -c 6 -s >> theme_info.temp
+cat theme_info.temp > theme_info
+rm theme_info.temp
