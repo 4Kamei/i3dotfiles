@@ -1,0 +1,89 @@
+#!/bin/bash
+
+OUTPUT=false
+COLOURS="4"
+MIN_INTENSITY="40"
+MIN_DISTANCE="1000"
+OUTPUT_STD=false
+
+while getopts 'of:c:i:d:s' arg; do
+	case "${arg}" in
+		o) OUTPUT=true ;;
+		f) FILE="${OPTARG}" ;;
+		c) COLOURS="${OPTARG}" ;;
+		i) MIN_INTENSITY="${OPTARG}" ;;
+		d) MIN_DISTANCE="${OPTARG}" ;;
+		s) OUTPUT_STD=true;;
+		*) error "Unexpected option $arg" ;;
+	esac	
+done
+FILE_NAME=$(echo "$FILE" | sed 's/\(\.[^/]*\|[^/]*\/\)//g') 
+
+if [ "$FILE" = "" ]; then
+	echo "Error: No input file"
+fi
+
+getDistance() {
+	R="$(($1 - $2))"
+	G="$(($3 - $4))"
+	B="$(($5 - $6))"
+	echo $((($R * $R) + ($G * $G) + ($B * $B)))
+}
+getDec() {
+	echo $(echo "$((16#$1))")
+}
+analyse() {
+	if [ $OUTPUT_STD = false ]; then echo "Analysing image $1"; fi
+	NUM=0
+	CUR_COL_R=0
+	CUR_COL_G=0
+	CUR_COL_B=0
+	CUR_COL_INT=0
+	convert $1 +dither -colors $COLOURS -unique-colors txt:- | grep -oP "\)  \K#[0-9A-F]*" | while read line; do
+		R=$(getDec $(expr substr $line 2 2))
+		G=$(getDec $(expr substr $line 4 2))
+		B=$(getDec $(expr substr $line 6 2))
+		INTENSITY=$((($R + $B + $G)/3))
+		
+		if [ $INTENSITY -lt $MIN_INTENSITY ]; then
+			continue
+		fi
+		
+		DISTANCE=$(getDistance $CUR_COL_R $R $CUR_COL_G $G $CUR_COL_B $B)
+		if [ "$DISTANCE" -lt "$MIN_DISTANCE" ]; then
+			continue;
+		fi 
+		if [ $OUTPUT = true ]; then
+			convert colours.png -fill $line -draw "point $2,$NUM" colours.png
+		else
+			if [ $OUTPUT_STD = true ]; then 
+				echo "colour$NUM: $line"
+			else
+				echo "colour $NUM:$line" >> "$FILE_NAME-colours.txt"    
+			fi		
+		fi	
+		CUR_COL_R=$R
+		CUR_COL_G=$G
+		CUR_COL_B=$B
+		NUM=$(($NUM+1))
+		if [ "$NUM" = "$COLOURS" ]; then
+			break
+		fi
+	done
+}
+
+cd "$HOME/.config/i3/wallpaper"
+
+if [ $OUTPUT = true ]; then convert -size "$(ls -1 $FILE | wc -l)x$COLOURS" xc:black -stroke none colours.png; fi
+
+if [ -d "$FILE" ]; then 
+	X=0
+	ls $FILE | while read line; do
+		analyse "$FILE/$line" $X
+		X=$(($X+1))
+	done
+fi
+
+if [ -f "$FILE" ]; then analyse $FILE 0; fi
+
+if [ $OUTPUT = true ]; then convert colours.png -filter point -resize 16000% colours.png; fi

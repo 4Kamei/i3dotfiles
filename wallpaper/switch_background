@@ -5,7 +5,7 @@
 DISPLAY=$(cat $HOME/.xenv) 
 cd $HOME/.config/i3
 if [ ! -f "theme_info" ] || [ "$(cat theme_info | grep -oP 'name: \K.*')" = "" ]; then
-	wallpaper=$(ls wallpaper/active | grep -E "*\.[jpg|png|" | shuf -n 1 -)
+	wallpaper=$(ls wallpaper/active | grep -E "*\.[jpg|png]" | shuf -n 1 -)
 else
 	wallpaper=$(ls wallpaper/active |  grep -Ev "$(cat theme_info | grep -oP 'name: \K.')" | grep -E "*\.[jpg|png]" | shuf -n 1 -)
 fi
