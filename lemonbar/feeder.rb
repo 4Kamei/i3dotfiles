@@ -3,14 +3,22 @@ require 'listen'
 
 def print (o = nil)
   $message = o if ! o.is_a? NilClass
-  $pipe.puts "%{B#33FFFFFF}%{l}#{$focused} - #{$workspace_string}%{c}>>#{$message} %{r}#{Time.now}"
+  $pipe.puts "%{B#77000000}%{l}#{$focused} - #{$workspace_string}%{c}>>#{$message} %{r}#{Time.now}"
 end
 name_map = {}
 $focused = ""
 $message = ""
 
-listener = Listen.to("..", only:/theme_info$/) do |mod, add, rem|
-  puts "Should update colours"
+listener = Listen.to("..", only:/theme_info$/, latency:5) do |mod, add, rem|
+  lines = File.read(mod[0]).split("\n")
+  if lines.length != 1
+      colData={}
+      for i in 1...lines.length
+        d = lines[i].split(": ")
+        colData[d[0].to_sym] = d[1]
+      end
+      puts colData
+  end
 end
 listener.start
 
