@@ -5,6 +5,7 @@ COLOURS="10"
 MIN_INTENSITY="40"
 MIN_DISTANCE="1000"
 OUTPUT_STD=false
+param_hue_difference="10"
 
 while getopts 'of:c:i:d:s' arg; do
 	case "${arg}" in
@@ -15,9 +16,9 @@ while getopts 'of:c:i:d:s' arg; do
 		d) MIN_DISTANCE="${OPTARG}" ;;
 		s) OUTPUT_STD=true;;
 		*) error "Unexpected option $arg" ;;
-	esac	
+	esac
 done
-FILE_NAME=$(echo "$FILE" | sed 's/\(\.[^/]*\|[^/]*\/\)//g') 
+FILE_NAME=$(echo "$FILE" | sed 's/\(\.[^/]*\|[^/]*\/\)//g')
 
 if [ "$FILE" = "" ]; then
 	echo "Error: No input file"
@@ -46,27 +47,34 @@ analyse() {
 		if [ $num -lt $cutoff ]; then
 			exit;
 		fi
-		
+
 		line=$(echo $line | grep -oE "#[0-9A-F]{6}")
 
 		R=$(getDec $(expr substr $line 2 2))
 		G=$(getDec $(expr substr $line 4 2))
 		B=$(getDec $(expr substr $line 6 2))
 		INTENSITY=$((($R + $B + $G)/3))
-		
+
 		if [ $INTENSITY -lt $MIN_INTENSITY ]; then
 			continue
 		fi
-		
+
 		DISTANCE=$(getDistance $CUR_COL_R $R $CUR_COL_G $G $CUR_COL_B $B)
 		if [ "$DISTANCE" -lt "$MIN_DISTANCE" ]; then
-			continue;
-		fi 
-		
-		m_cap=$(printf "$R\n$G\n$B" | sort -n | tail -1)	
-		m_low=$(printf "$R\n$G\n$B" | sort -r -n | tail -1) 
+			continue
+		fi
+		echo "$line $R $G $B"
+	done > parsed_colours
+	echo "text: $(cat parsed_colours | head -1 | cut -d" " -f 1)"
+	background_hue="not set"
+	background_comp_hue="not set"
+	accent_hue="not set"
+	cat parsed_colours | tail -n+2 | while read line R G B; do
+
+		m_cap=$(printf "$R\n$G\n$B" | sort -n | tail -1)
+		m_low=$(printf "$R\n$G\n$B" | sort -r -n | tail -1)
 		c=$(($m_cap - $m_low))
-			
+
 		if [ "$c" = "0" ]; then
 			h=0;
 		else
@@ -75,33 +83,38 @@ analyse() {
 				$G) h=$(bc -l <<< "scale = 10; ($B - $R)/$c + 2") ;;
 				$B) h=$(bc -l <<< "scale = 10; ($R - $G)/$c + 4") ;;
 			esac
-		fi 	
+		fi
 		h=$(bc -l <<< "scale = 0; (($h * 60)/1 + 360) % 360")
 		echo "$h $line"
-	done | sort -n | while read h line; do
-		echo "H=$h; line=$line"
+	done | sort -n | while read hue rgb; do
 
-		if [ $OUTPUT = true ]; then
-			convert colours.png -fill $line -draw "point $2,$y" colours.png
-		else
-			if [ $OUTPUT_STD = true ]; then 
-				echo "colour$NUM: $line"
-			else
-				echo "colour $NUM:$line" >> "$FILE_NAME-colours.txt"    
-			fi		
-		fi	
-		CUR_COL_R=$R
-		CUR_COL_G=$G
-		CUR_COL_B=$B
-		y=$(($y + 1))
-	done
+		if [ "$background_hue" = "not set" ]; then
+			backgroud_hue=$hue
+			echo "background = $rgb"
+			continue
+		fi
+
+		if [ "$background_comp_hue" = "not set" ]; then
+			if [ $(($background_hue - $hue)) -gt $param_hue_difference ]; then
+				background_comp_hue=$hue
+				echo "background_comp = $rgb"
+			fi
+			continue
+		fi
+
+		if [ "$(($background_main_hue - $hue))" -gt "$param_hue_difference_accent" ]; then
+			accent_hue=$hue
+			echo "accent = $rgb"
+		fi
+
+	done 
 }
 
 cd "$HOME/.config/i3/wallpaper"
 
 if [ $OUTPUT = true ]; then convert -size "$(ls -1 $FILE | wc -l)x$COLOURS" xc:black -stroke none colours.png; fi
 
-if [ -d "$FILE" ]; then 
+if [ -d "$FILE" ]; then
 	X=0
 	ls $FILE | while read line; do
 		analyse "$FILE/$line" $X
