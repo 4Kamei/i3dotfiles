@@ -39,7 +39,16 @@ analyse() {
 	CUR_COL_G=0
 	CUR_COL_B=0
 	CUR_COL_INT=0
-	convert $1 +dither -colors $COLOURS -unique-colors txt:- | grep -oP "\)  \K#[0-9A-F]*" | while read line; do
+	image_size="$(($(identify $1 | cut -d" " -f 3 | sed 's/x/ * /')))"
+	cutoff=$(($image_size * 2 / 1000))
+	convert "$1" -format %c -depth 4 histogram:info:- | sort -r -t: -nk 1 |  while read line; do
+		num=$(echo $line | grep -oP ' *\K[0-9]*:' | cut -d":" -f 1)
+		if [ $num -lt $cutoff ]; then
+			exit;
+		fi
+		
+		line=$(echo $line | grep -oE "#[0-9A-F]{6}")
+
 		R=$(getDec $(expr substr $line 2 2))
 		G=$(getDec $(expr substr $line 4 2))
 		B=$(getDec $(expr substr $line 6 2))
@@ -53,6 +62,7 @@ analyse() {
 		if [ "$DISTANCE" -lt "$MIN_DISTANCE" ]; then
 			continue;
 		fi 
+
 		if [ $OUTPUT = true ]; then
 			convert colours.png -fill $line -draw "point $2,$NUM" colours.png
 		else
