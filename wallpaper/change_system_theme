@@ -8,9 +8,8 @@ sed -i 's/colour2\: /background_comp = /' theme_info.temp
 sed -i 's/colour3\: /accent = /' theme_info.temp
 cp theme_info.temp theme_info
 rm theme_info.temp
-echo "[colors]" > ../polybar/colours
-cat theme_info | tail -n+2 >> ../polybar/colours
+echo "[colors]" > polybar/config
+cat theme_info | tail -n+2 >> polybar/config
 #merge poly config
-cd ../polybar
-cp colours config
+cd polybar
 cat config_template >> config
