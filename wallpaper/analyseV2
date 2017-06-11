@@ -1,7 +1,7 @@
 #!/bin/bash
 
 OUTPUT=false
-COLOURS="4"
+COLOURS="10"
 MIN_INTENSITY="40"
 MIN_DISTANCE="1000"
 OUTPUT_STD=false
@@ -34,14 +34,14 @@ getDec() {
 }
 analyse() {
 	if [ $OUTPUT_STD = false ]; then echo "Analysing image $1"; fi
-	NUM=0
+	y=0
 	CUR_COL_R=0
 	CUR_COL_G=0
 	CUR_COL_B=0
 	CUR_COL_INT=0
 	image_size="$(($(identify $1 | cut -d" " -f 3 | sed 's/x/ * /')))"
 	cutoff=$(($image_size * 2 / 1000))
-	convert "$1" -format %c -depth 4 histogram:info:- | sort -r -t: -nk 1 |  while read line; do
+	convert "$1" -format %c -depth 4 histogram:info:- | sort -r -t: -n |  while read line; do
 		num=$(echo $line | grep -oP ' *\K[0-9]*:' | cut -d":" -f 1)
 		if [ $num -lt $cutoff ]; then
 			exit;
@@ -62,9 +62,27 @@ analyse() {
 		if [ "$DISTANCE" -lt "$MIN_DISTANCE" ]; then
 			continue;
 		fi 
+		
+		m_cap=$(printf "$R\n$G\n$B" | sort -n | tail -1)	
+		m_low=$(printf "$R\n$G\n$B" | sort -r -n | tail -1) 
+		c=$(($m_cap - $m_low))
+			
+		if [ "$c" = "0" ]; then
+			h=0;
+		else
+			case $m_cap in
+				$R) h=$(bc -l <<< "scale = 10; a = ($G - $B)/$c; scale = 0; a % 6") ;;
+				$G) h=$(bc -l <<< "scale = 10; ($B - $R)/$c + 2") ;;
+				$B) h=$(bc -l <<< "scale = 10; ($R - $G)/$c + 4") ;;
+			esac
+		fi 	
+		h=$(bc -l <<< "scale = 0; (($h * 60)/1 + 360) % 360")
+		echo "$h $line"
+	done | sort -n | while read h line; do
+		echo "H=$h; line=$line"
 
 		if [ $OUTPUT = true ]; then
-			convert colours.png -fill $line -draw "point $2,$NUM" colours.png
+			convert colours.png -fill $line -draw "point $2,$y" colours.png
 		else
 			if [ $OUTPUT_STD = true ]; then 
 				echo "colour$NUM: $line"
@@ -75,10 +93,7 @@ analyse() {
 		CUR_COL_R=$R
 		CUR_COL_G=$G
 		CUR_COL_B=$B
-		NUM=$(($NUM+1))
-		if [ "$NUM" = "$COLOURS" ]; then
-			break
-		fi
+		y=$(($y + 1))
 	done
 }
 
