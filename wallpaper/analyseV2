@@ -1,20 +1,17 @@
 #!/bin/bash
 
-OUTPUT=false
 COLOURS="10"
 MIN_INTENSITY="40"
 MIN_DISTANCE="1000"
-OUTPUT_STD=false
 param_hue_difference="10"
 param_hue_difference_accent="40"
-while getopts 'of:c:i:d:s' arg; do
+param_text_hue_difference="100"
+while getopts 'f:c:i:d' arg; do
 	case "${arg}" in
-		o) OUTPUT=true ;;
 		f) FILE="${OPTARG}" ;;
 		c) COLOURS="${OPTARG}" ;;
 		i) MIN_INTENSITY="${OPTARG}" ;;
 		d) MIN_DISTANCE="${OPTARG}" ;;
-		s) OUTPUT_STD=true;;
 		*) error "Unexpected option $arg" ;;
 	esac
 done
@@ -34,8 +31,6 @@ getDec() {
 	echo $(echo "$((16#$1))")
 }
 analyse() {
-	if [ $OUTPUT_STD = false ]; then echo "Analysing image $1"; fi
-	y=0
 	CUR_COL_R=0
 	CUR_COL_G=0
 	CUR_COL_B=0
@@ -64,37 +59,39 @@ analyse() {
 			continue
 		fi
 		echo "$line $R $G $B"
-	done > parsed_colours
+	done | while read line R G B; do
+
+			m_cap=$(printf "$R\n$G\n$B" | sort -n | tail -1)
+			m_low=$(printf "$R\n$G\n$B" | sort -r -n | tail -1)
+			c=$(($m_cap - $m_low))
+
+			if [ "$c" = "0" ]; then
+				h=0;
+			else
+				case $m_cap in
+					$R) h=$(bc -l <<< "scale = 10; a = ($G - $B)/$c; scale = 0; a % 6") ;;
+					$G) h=$(bc -l <<< "scale = 10; ($B - $R)/$c + 2") ;;
+					$B) h=$(bc -l <<< "scale = 10; ($R - $G)/$c + 4") ;;
+				esac
+			fi
+			h=$(bc -l <<< "scale = 0; (($h * 60)/1 + 360) % 360")
+			echo "$h $line $R $G $B"
+	done | sort -n > parsed_colours
 	text_line="$(cat parsed_colours | head -1)"
-	text=$(echo $text_line | cut -d" " -f 1)
+	text=$(echo "$text_line" | cut -d" " -f 2)
+	text_hue=$(echo "$text_line" | cut -d" " -f 1)
 	background_hue="not set"
 	background_comp_hue="not set"
 	accent_hue="not set"
-	set="0"
 	echo "text = $text" > colours
-
-	cat parsed_colours | tail -n+2 | while read line R G B; do
-
-		m_cap=$(printf "$R\n$G\n$B" | sort -n | tail -1)
-		m_low=$(printf "$R\n$G\n$B" | sort -r -n | tail -1)
-		c=$(($m_cap - $m_low))
-
-		if [ "$c" = "0" ]; then
-			h=0;
-		else
-			case $m_cap in
-				$R) h=$(bc -l <<< "scale = 10; a = ($G - $B)/$c; scale = 0; a % 6") ;;
-				$G) h=$(bc -l <<< "scale = 10; ($B - $R)/$c + 2") ;;
-				$B) h=$(bc -l <<< "scale = 10; ($R - $G)/$c + 4") ;;
-			esac
-		fi
-		h=$(bc -l <<< "scale = 0; (($h * 60)/1 + 360) % 360")
-		echo "$h $line"
-	done | sort -n | while read hue rgb; do
+ 	cat parsed_colours | while read hue rgb red green blue; do
 
 		if [ "$background_hue" = "not set" ]; then
-			background_hue=$hue
-			echo "background = $rgb"
+			diff=$(echo "$(($text_hue - $hue))" | cut -d"-" -f 2)
+			if [ $diff -gt $param_text_hue_difference ]; then
+				background_hue=$hue
+				echo "background = $rgb"
+			fi
 			continue
 		fi
 
@@ -110,31 +107,18 @@ analyse() {
 		diff=$(echo "$(($background_main_hue - $hue))" | cut -d"-" -f 2)
 		if [ "$diff" -gt "$param_hue_difference_accent" ] && [ "$accent_hue" = "not set" ]; then
 			export accent_hue=$hue
-			set=$((set++))
 			echo "accent = $rgb"
 		fi
 	done >> colours
 
 	if [ "$(cat colours | wc -l)" = "3" ]; then
-		echo "$text_line" | while read line red green blue; do
+		echo "$text_line" | while read hue line red green blue; do
 			echo "accent = #$(bc -l <<< "obase = 16; 255 - $red")$(bc -l <<< "obase = 16; 255 - $green")$(bc -l <<< "obase = 16; 255 - $blue")" > colours
 		done
 	fi
-	
+
 }
 
 cd "$HOME/.config/i3/wallpaper"
 
-if [ $OUTPUT = true ]; then convert -size "$(ls -1 $FILE | wc -l)x$COLOURS" xc:black -stroke none colours.png; fi
-
-if [ -d "$FILE" ]; then
-	X=0
-	ls $FILE | while read line; do
-		analyse "$FILE/$line" $X
-		X=$(($X+1))
-	done
-fi
-
 if [ -f "$FILE" ]; then analyse $FILE 0; fi
-
-if [ $OUTPUT = true ]; then convert colours.png -filter point -resize 16000% colours.png; fi
