@@ -6,7 +6,7 @@ MIN_INTENSITY="40"
 MIN_DISTANCE="1000"
 OUTPUT_STD=false
 param_hue_difference="10"
-
+param_hue_difference_accent="40"
 while getopts 'of:c:i:d:s' arg; do
 	case "${arg}" in
 		o) OUTPUT=true ;;
@@ -65,10 +65,14 @@ analyse() {
 		fi
 		echo "$line $R $G $B"
 	done > parsed_colours
-	echo "text: $(cat parsed_colours | head -1 | cut -d" " -f 1)"
+	text_line="$(cat parsed_colours | head -1)"
+	text=$(echo $text_line | cut -d" " -f 1)
 	background_hue="not set"
 	background_comp_hue="not set"
 	accent_hue="not set"
+	set="0"
+	echo "text = $text" > colours
+
 	cat parsed_colours | tail -n+2 | while read line R G B; do
 
 		m_cap=$(printf "$R\n$G\n$B" | sort -n | tail -1)
@@ -89,25 +93,34 @@ analyse() {
 	done | sort -n | while read hue rgb; do
 
 		if [ "$background_hue" = "not set" ]; then
-			backgroud_hue=$hue
+			background_hue=$hue
 			echo "background = $rgb"
 			continue
 		fi
 
 		if [ "$background_comp_hue" = "not set" ]; then
-			if [ $(($background_hue - $hue)) -gt $param_hue_difference ]; then
+			diff=$(echo "$(($background_hue - $hue))" | cut -d"-" -f 2)
+			if [ $diff -gt $param_hue_difference ]; then
 				background_comp_hue=$hue
 				echo "background_comp = $rgb"
 			fi
 			continue
 		fi
 
-		if [ "$(($background_main_hue - $hue))" -gt "$param_hue_difference_accent" ]; then
-			accent_hue=$hue
+		diff=$(echo "$(($background_main_hue - $hue))" | cut -d"-" -f 2)
+		if [ "$diff" -gt "$param_hue_difference_accent" ] && [ "$accent_hue" = "not set" ]; then
+			export accent_hue=$hue
+			set=$((set++))
 			echo "accent = $rgb"
 		fi
+	done >> colours
 
-	done 
+	if [ "$(cat colours | wc -l)" = "3" ]; then
+		echo "$text_line" | while read line red green blue; do
+			echo "accent = #$(bc -l <<< "obase = 16; 255 - $red")$(bc -l <<< "obase = 16; 255 - $green")$(bc -l <<< "obase = 16; 255 - $blue")" > colours
+		done
+	fi
+	
 }
 
 cd "$HOME/.config/i3/wallpaper"
