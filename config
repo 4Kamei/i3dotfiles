@@ -10,8 +10,9 @@
 # Please see http://i3wm.org/docs/userguide.html for a complete reference!
 
 exec --no-startup-id "echo $DISPLAY > $HOME/.xenv"
-exec --no-startup-id "sh ~/.config/i3/wallpaper/switch_background"
+exec --no-startup-id "sh ~/.config/i3/change_system_theme"
 exec --no-startup-id "sh ~/.config/i3/lockscreen/lockscreen -b"
+
 set $mod Mod1
 
 # Font for window titles. Will also be used by the bar unless a different font

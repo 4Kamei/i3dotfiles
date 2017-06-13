@@ -5,11 +5,11 @@ MIN_INTENSITY="40"
 MIN_DISTANCE="1000"
 param_hue_difference="10"
 param_hue_difference_accent="40"
-param_text_hue_difference="100"
-while getopts 'f:c:i:d' arg; do
+param_text_hue_difference="30"
+
+while getopts 'f:i:d' arg; do
 	case "${arg}" in
 		f) FILE="${OPTARG}" ;;
-		c) COLOURS="${OPTARG}" ;;
 		i) MIN_INTENSITY="${OPTARG}" ;;
 		d) MIN_DISTANCE="${OPTARG}" ;;
 		*) error "Unexpected option $arg" ;;
