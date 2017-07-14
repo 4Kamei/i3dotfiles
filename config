@@ -201,6 +201,9 @@ bindsym XF86AudioMute exec --no-startup-id amixer sset Master toggle # mute soun
 bindsym XF86MonBrightnessUp exec light -A 10 # increase screen brightness
 bindsym XF86MonBrightnessDown exec light -U 10 # decrease screen brightness
 
+#bindsym $mod+Print exec "bash ~/.config/i3/scripts/screenshot_to_clipboard"
+bindsym $mod+m exec scrot -s ~/wallpaper.png
+
 # Green Theme
 client.focused #99cc99 #99cc99 #000000 #2d2d2d
 client.focused_inactive #393939 #393939 #888888 #292d2e

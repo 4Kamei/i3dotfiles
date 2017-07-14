@@ -1,0 +1,203 @@
+[colors]
+text = #994444
+background = #DDDDEE
+background_comp = #EECCAA
+accent = #DDDDDD
+; ~/.config/polybar/config
+; zoug
+;
+; polybar configuration file
+; all colors from light solarized colorscheme
+;
+
+[bar/top]
+wm-name = polybar-top
+monitor = eDP-1
+bottom = false
+override-redirect = false
+
+;width = 1300
+;height = 23
+width = 100%
+height = 30
+
+;offset-x = 33
+;offset-y = 5
+
+background = ${colors.background}
+foreground = ${colors.text}
+;linecolor = #ff0000
+
+spacing = 1
+line-size = 2
+
+;separator = |
+
+locale = en_US.UTF-8
+
+scroll-up = i3wm-wsnext
+scroll-down = i3wm-wsprev
+
+padding-left = 0
+padding-right = 0
+module-margin-left = 1
+module-margin-right = 1
+
+font-0 = "DejaVu":size=8:weight=Monospaced;0
+font-1 = FontAwesome:size=11:weight=Regular;1
+font-2 = "DejaVu Sans Mono":size=8;0
+
+modules-left = powermenu xwindow i3 colourtest
+modules-right = wireless-network battery volume cpu backlight clock
+
+[module/cpu]
+type = internal/cpu
+label =  %percentage%
+format-padding = 2
+
+[module/clock]
+type = internal/date
+date =  %a, %d %b %H:%M
+format-padding = 2
+format-background = ${colors.background_comp}
+format-foreground = ${colors.text}
+
+[module/volume]
+type = internal/volume
+format-volume-padding = 2
+format-muted-padding = 2
+label-volume =  %percentage%
+label-muted = 
+
+[module/backlight]
+type = internal/backlight
+card = intel_backlight
+format =    <bar>
+bar-width = 10
+bar-indicator = 🌑
+bar-fill = 🌑
+bar-empty = 🌕
+format-padding = 1
+
+[module/xwindow]
+type = internal/xwindow
+label-active-font = 2
+label = %title:30:30:..%
+
+[module/battery]
+module-margin-left=10
+type = internal/battery
+battery = BAT0
+adapter = AC
+format-charging = "<animation-charging> <label-charging>"
+label-charging = %percentage%
+label-discharging = %percentage%
+label-full = "  100"
+format-discharging = "<ramp-capacity> <label-discharging>"
+label-padding = 5
+
+ramp-capacity-0 = 
+ramp-capacity-1 = 
+ramp-capacity-2 = 
+ramp-capacity-3 = 
+ramp-capacity-4 = 
+
+bar-capacity-width = 10
+
+animation-charging-0 = 
+animation-charging-1 = 
+animation-charging-2 = 
+animation-charging-3 = 
+animation-charging-4 = 
+animation-charging-framerate = 750
+
+[module/i3]
+type = internal/i3
+
+pin-workspaces=false
+strip-wsnumbers=true
+index-sort=true
+enable-click=true
+enable-scroll=false
+fuzzy-match=true
+
+format =  <label-state>
+
+ws-icon-0 = 1;work;
+ws-icon-1 = 2;music;
+ws-icon-2 = 3;firefox;
+ws-icon-3 = 4;reading;
+ws-icon-4 = 5;vlc;
+ws-icon-5 = 6;distant;
+ws-icon-6 = 7;voice;
+ws-icon-7 = 8;keys;
+ws-icon-8 = 9;tree;
+
+label-focused = %name%
+label-focused-background = ${colors.background_comp}
+label-focused-foreground = ${colors.text}
+label-focused-padding = 2
+
+label-unfocused = %name%
+label-unfocused-padding= 2
+
+label-visible = %name%
+label-visible-underline = ${colors.accent}
+label-visible-padding = 2
+
+[module/colourtest]
+;;this reads from fifo at ~/test and outputs 
+type = custom/script
+
+exec = cat ~/read_not
+
+tail = true
+
+interval = 0
+
+[module/powermenu]
+type = custom/menu
+
+format-padding = 2
+format-background = ${colors.background_comp}
+format-foreground = ${colors.accent}
+
+label-open = 
+label-close = 
+label-separator = " - "
+
+menu-0-0 = Terminate WM
+menu-0-0-foreground = #fff
+menu-0-0-exec = bspc quit -1
+menu-0-1 = Reboot
+menu-0-1-foreground = #fff
+menu-0-1-exec = sudo reboot
+menu-0-2 = Power off
+menu-0-2-foreground = #fff
+menu-0-2-exec = sudo poweroff
+menu-0-3 = Suspend
+menu-0-3-foreground = #fff
+menu-0-3-exec = sudo systemctl suspend
+
+[module/wireless-network]
+type = internal/network
+interface = wlp2s0
+interval = 2.0
+ping-interval = 10
+format-connected = <ramp-signal> <label-connected>
+label-connected = "  %upspeed%   %downspeed% "
+
+ramp-signal-0 = 😱
+ramp-signal-1 = 😠
+ramp-signal-2 = 😒
+ramp-signal-3 = 😊
+ramp-signal-4 = 😃
+ramp-signal-5 = 😈
+
+label-disconnected =  not connected
+label-connected-background = ${colors.background_comp}
+label-connected-foreground = ${colors.text}
+label-disconnected-background = ${colors.background_comp}
+label-disconnected-foreground = ${colors.text}
+
+; vim:ft=dosini
