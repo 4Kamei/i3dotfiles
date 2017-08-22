@@ -9,6 +9,7 @@ if [ ! -f "theme_info" ] || [ "$(cat theme_info | grep -oP 'name: \K.*')" = "" ]
 else
 	wallpaper=$(ls wallpaper/active |  grep -Ev "$(cat theme_info | grep -oP 'name: \K.')" | grep -E "*\.[jpg|png]" | shuf -n 1 -)
 fi
+
 echo "name: $wallpaper" > theme_info.temp
 #set as desktop background. First line needed for feh to recognise the X session 
 DISPLAY=$(cat $HOME/.xenv) feh --bg-scale "wallpaper/active/$wallpaper"

@@ -1,12 +1,8 @@
 #!/usr/bin/env bash
 cd $HOME/.config/i3
 sh wallpaper/switch_background 
-sh wallpaper/analyseV2 -f "active/$(cat theme_info.temp | grep -oP 'name: \K.*')" -i 40 >> theme_info.temp 
+sh wallpaper/analyseV2 -f "active/$(cat theme_info.temp | grep -oP 'name: \K.*')" -i 40
+cat wallpaper/colours >> theme_info.temp 
 cp theme_info.temp theme_info
 rm theme_info.temp
-echo "[colors]" > polybar/colours
-cat theme_info | tail -n+2 >> polybar/colours
-#merge poly config
-cd polybar
-cp colours config
-cat config_template >> config
+sh update_polybar_config
