@@ -1,5 +1,5 @@
 [colors]
-text = #99FFFF
-background = #CC8899
-background_comp = #FFFFDD
-accent = #996666
+text = #FF7766
+background = #666688
+background_comp = #881177
+accent = #2277DD

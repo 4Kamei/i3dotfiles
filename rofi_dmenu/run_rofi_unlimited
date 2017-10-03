@@ -1,2 +1,2 @@
 #!/bin/sh
-dmenu_path | rofi -dmenu >> prog
+dmenu_path | rofi -dmenu >> ~/.config/i3/rofi_dmenu/prog
