@@ -10,7 +10,7 @@
 # Please see http://i3wm.org/docs/userguide.html for a complete reference!
 
 exec --no-startup-id "echo $DISPLAY > $HOME/.xenv"
-exec --no-startup-id "sh ~/.config/i3/change_system_theme"
+#exec --no-startup-id "sh ~/.config/i3/change_system_theme"
 exec --no-startup-id "sh ~/.config/i3/lockscreen/lockscreen -b"
 
 set $mod Mod1
@@ -188,9 +188,6 @@ new_window none
 
 #Lock
 bindsym $mod+p exec "bash ~/.config/i3/lockscreen/lockscreen"
-
-#Loading VoIP and enthereum
-exec i3_msg "workspace 10; append_layout /home/kamei/.config/i3/workspace-10.json; exec /usr/bin/discord; exec /usr/bin/mist"
 
 # Pulse Audio controls
 bindsym XF86AudioRaiseVolume exec --no-startup-id amixer sset Master 5%+ on #increase sound volume
