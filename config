@@ -10,7 +10,7 @@
 # Please see http://i3wm.org/docs/userguide.html for a complete reference!
 
 exec --no-startup-id "echo $DISPLAY > $HOME/.xenv"
-#exec --no-startup-id "sh ~/.config/i3/change_system_theme"
+exec --no-startup-id "sh ~/.config/i3/setup_system_theme"
 exec --no-startup-id "sh ~/.config/i3/lockscreen/lockscreen -b"
 
 set $mod Mod1

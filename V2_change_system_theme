@@ -1,8 +1,0 @@
-#!/usr/bin/env bash
-cd $HOME/.config/i3
-sh wallpaper/switch_background 
-sh wallpaper/analyseV2 -f "active/$(cat theme_info.temp | grep -oP 'name: \K.*')" -i 40
-cat wallpaper/colours >> theme_info.temp 
-cp theme_info.temp theme_info
-rm theme_info.temp
-sh update_polybar_config

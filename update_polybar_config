@@ -1,7 +1,0 @@
-#!/usr/bin/env bash
-cd $HOME/.config/i3
-echo "[colors]" > polybar/config
-cat theme_info | tail -n+2 >> polybar/config
-#merge poly config
-cd polybar
-cat config_template >> config
