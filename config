@@ -12,6 +12,7 @@
 exec --no-startup-id "echo $DISPLAY > $HOME/.xenv"
 exec --no-startup-id "sh ~/.config/i3/setup_system_theme"
 exec --no-startup-id "sh ~/.config/i3/lockscreen/lockscreen -b"
+#exec "polybar top -r"
 
 set $mod Mod1
 
@@ -42,6 +43,18 @@ bindsym $mod+Shift+q kill
 # start rofi 
 bindsym $mod+d exec ~/.config/i3/rofi_dmenu/run_rofi
 bindsym $mod+Shift+d exec ~/.config/i3/rofi_dmenu/run_rofi_unlimited
+
+#bindsym $mod+Shift+F1 mode "disable_mod"
+
+#mode "disable_mod" {
+##   exec "echo 'Work Mode' > $HOME/.config/i3/polybar/work_mode"
+#    bindsym $mod+Shift+F1 mode "diable_mod_cleanup"
+#}
+
+#mode "disable_mod_cleanup {
+#    exec "echo '' > $HOME/.config/i3/polybar/work_mode"
+#    mode "default"
+#}
 
 
 # bindsym $mod+d exec dmenu_run
@@ -163,9 +176,9 @@ bindsym $mod+r mode "resize"
 bar {
   status_command "polybar top -r"
   #hide tray
-  mode hide
+  mode invisible
   colors {
-    separator #515151
+   separator #515151
     background #2d2d2d
     statusline #cccccc
     focused_workspace #99cc99 #99cc99 #000000
@@ -199,7 +212,7 @@ bindsym XF86MonBrightnessUp exec light -A 10 # increase screen brightness
 bindsym XF86MonBrightnessDown exec light -U 10 # decrease screen brightness
 
 #bindsym $mod+Print exec "bash ~/.config/i3/scripts/screenshot_to_clipboard"
-bindsym $mod+m exec scrot ~/wallpaper.png
+bindsym $mod+m exec scrot ~/screenshot.png
 
 # Green Theme
 #client.focused #99cc99 #99cc99 #000000 #2d2d2d
