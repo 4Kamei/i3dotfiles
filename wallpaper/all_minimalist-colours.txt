@@ -1,0 +1,4 @@
+colour 0:#FF7766
+colour 1:#666688
+colour 2:#881177
+colour 3:#2277DD

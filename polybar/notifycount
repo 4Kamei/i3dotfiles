@@ -1,0 +1,19 @@
+#!/bin/env bash
+
+export f="$HOME/.config/i3/polybar/email/new_e"
+echo > $f
+echo "Unread: $(wc -l $f | cut -d ' ' -f 1)"
+inotifywait /lib/thunderbird/extensions/notifysound.wav ~/.config/i3/polybar/email -r -s -m -e OPEN -e DELETE | while read file evt handle; do
+    #exec when new email arrives
+    export file="$(basename $file)"
+    if [ $file == "notifysound.wav" ]; then
+        echo "e" >> $f
+        echo "Unread: $(wc -l $f | cut -d ' ' -f 1)"
+    fi
+ 
+    if [ $file == "email" ] && [ $evt == "DELETE" ]; then
+        touch $f
+        echo "Unread: $(wc -l $f | cut -d ' ' -f 1)"
+    fi
+done
+

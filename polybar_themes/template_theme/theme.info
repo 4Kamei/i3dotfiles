@@ -1,0 +1,10 @@
+name: template_theme #Same as the folder name
+author: Name Name Name
+version: 1.0
+colours:
+    bg1
+    bg2
+    bg3
+    bg4
+
+

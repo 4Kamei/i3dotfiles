@@ -1,0 +1,11 @@
+#!/bin/env bash
+
+cd $HOME/.config/i3/polybar_themes
+
+function getProperty {
+    cat $line/theme.info | sed -n 's/'$1': \?\(.*\) \.*#.*/\1/p'
+}
+
+ls | while read line; do  
+    getProperty name;
+done;

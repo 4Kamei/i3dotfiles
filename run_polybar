@@ -1,0 +1,2 @@
+#!/bin/env bash
+exec polybar --config=$HOME/.config/i3/polybar/config top -r > /dev/null &

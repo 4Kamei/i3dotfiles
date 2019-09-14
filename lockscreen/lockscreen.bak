@@ -11,7 +11,7 @@ else
     #Gravity east since I want overlay on right image (my laptop montitor) 
     composite -gravity east overlay.png $IMAGE $IMAGE
 fi
-i3lock -i $IMAGE \
+#i3lock -i $IMAGE \
 	--insidecolor=00000000 \
 	--textcolor=00000000 \
 	--timecolor=ffffff00 \

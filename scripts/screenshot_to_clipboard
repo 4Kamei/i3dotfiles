@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+cd $HOME/.config/i3/scripts
+scrot temp.png
+xclip -selection clipboard -t image/png -i temp.png
+rm temp.png

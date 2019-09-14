@@ -1,0 +1,3 @@
+#!/bin/bash
+inotifywait . --excludei "^([^n].*$)|(n([^e].*$|$))|(ne([^w].*$|$))|(new([^_].*$|$))|(new_([^e].*$|$))|(new_e.+$)" -m -r
+

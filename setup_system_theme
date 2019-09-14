@@ -1,0 +1,37 @@
+#!/bin/env bash
+
+export dataFolder=$HOME/.config/i3/polybar_themes
+
+function printHelp {
+    echo "Usage: $0" 
+}
+
+function getProperty {
+    ls $dataFolder | { read theme;
+        cat $dataFolder/$theme/theme.info | sed -n 's/'$1': \?\(.*\) \.*#.*/\1/p'
+    }
+}
+
+while getopts 'l' flag; do
+    case "${flag}" in
+        l) #List the current themes 
+            echo $(getProperty name)
+            exit 
+     esac
+done;
+
+if [ ! -d $dataFolder/$1 ]; then
+    echo Error: Theme not found: $1
+    echo $(printHelp)
+    exit;
+fi
+
+cd $dataFolder/$1  
+if pgrep -x polybar; then
+    pgrep polybar | while read line; do {
+        echo "Killing polybar at $line"
+        kill $line
+    } done;
+fi
+feh --bg-scale wallpaper/$(ls wallpaper | shuf | head -1)
+exec polybar --config=$dataFolder/$1/polybar.config top > /dev/null & 
